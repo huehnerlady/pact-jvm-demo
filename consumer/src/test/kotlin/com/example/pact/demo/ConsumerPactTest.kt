@@ -74,17 +74,14 @@ class ConsumerPactTest {
                 httpResponseBuilder
                     .status(200)
                     .body(
-                        newJsonBody { o: LambdaDslJsonBody ->
-                          o.eachLike("myData", 2
-                              ) { friend: LambdaDslObject ->
-                                friend
-                                    .stringType("foo", "foo")
-                                    .`object`("bar") { bar: LambdaDslObject ->
-                                      bar
-                                          .stringType("bar", "bar")
-                                    }
-                              }
-                        }.build()
+                        newJsonObject {
+                          eachLike("myData", 2){
+                            stringType("foo", "foo")
+                            `object`("bar"){
+                              stringType("bar", "bar")
+                            }
+                          }
+                        }
                     )
               }
         }
