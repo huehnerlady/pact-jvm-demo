@@ -1,8 +1,14 @@
 package com.example.pact.demo
 
 import au.com.dius.pact.consumer.MockServer
+import au.com.dius.pact.consumer.dsl.LambdaDsl
+import au.com.dius.pact.consumer.dsl.LambdaDsl.newJsonBody
+import au.com.dius.pact.consumer.dsl.LambdaDslJsonBody
+import au.com.dius.pact.consumer.dsl.LambdaDslObject
 import au.com.dius.pact.consumer.dsl.PactBuilder
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody
+import au.com.dius.pact.consumer.dsl.newJsonObject
+import au.com.dius.pact.consumer.dsl.newObject
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt
 import au.com.dius.pact.consumer.junit5.PactTestFor
 import au.com.dius.pact.core.model.PactSpecVersion.V4
@@ -67,14 +73,18 @@ class ConsumerPactTest {
               .willRespondWith { httpResponseBuilder ->
                 httpResponseBuilder
                     .status(200)
-                    .body(PactDslJsonBody()
-                        .`object`("myData", PactDslJsonBody()
-                            .eachLike("myData", 2)
-                            .stringType("foo", "foo")
-                            .`object`("bar", PactDslJsonBody()
-                                .stringType("bar", "bar")
-                            )
-                        )
+                    .body(
+                        newJsonBody { o: LambdaDslJsonBody ->
+                          o.eachLike("myData", 2
+                              ) { friend: LambdaDslObject ->
+                                friend
+                                    .stringType("foo", "foo")
+                                    .`object`("bar") { bar: LambdaDslObject ->
+                                      bar
+                                          .stringType("bar", "bar")
+                                    }
+                              }
+                        }.build()
                     )
               }
         }
